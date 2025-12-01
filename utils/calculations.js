@@ -88,6 +88,8 @@ export const calculateElpacPointsNeeded = (currentScore, grade) => {
 
 /**
  * Calculate assessment progress percentage with precision
+ * Progress is based on: how far you've gotten from 0 to the target
+ * If you meet or exceed target, progress is 100%
  * @param {number} score - Current score
  * @param {number} target - Target score
  * @param {number} max - Maximum possible score
@@ -101,11 +103,15 @@ export const calculateProgress = (score, target, max = null) => {
 
   if (currentScore <= 0 || targetScore <= 0) return 0;
 
-  // Calculate progress as percentage of target
+  // If already met or exceeded target, return 100%
+  if (currentScore >= targetScore) return 100;
+
+  // Calculate progress from 0 to target
+  // This gives actual progress toward meeting the requirement
   const progress = (currentScore / targetScore) * 100;
 
-  // Cap at 100% but allow overage tracking
-  return Math.min(progress, 150); // Allow up to 150% for visual feedback
+  // Return progress capped at 100%
+  return Math.min(Math.max(progress, 0), 100);
 };
 
 /**
@@ -126,6 +132,7 @@ export const calculatePointsNeeded = (score, target) => {
 /**
  * Calculate overall reclassification progress
  * Accounts for dual requirement: ELPAC Level 4 + 1 other assessment
+ * Progress is ONLY meaningful when requirements are actually met
  * @param {boolean} elpacMeets - Whether ELPAC Level 4 is met
  * @param {number} elpacProgress - ELPAC progress percentage
  * @param {number} otherAssessmentsMet - Number of other assessments met
@@ -143,12 +150,12 @@ export const calculateOverallProgress = (
     return 100;
   }
 
-  // ELPAC is 50% of total progress
-  // Other assessment is 50% of total progress
-  const elpacContribution = elpacMeets ? 50 : (elpacProgress * 0.5);
-  const otherContribution = otherAssessmentsMet > 0 ? 50 : (bestOtherProgress * 0.5);
+  // ELPAC counts as 50% ONLY if Level 4 is achieved
+  // Other assessment counts as 50% ONLY if at least one is met
+  const elpacContribution = elpacMeets ? 50 : 0;
+  const otherContribution = otherAssessmentsMet > 0 ? 50 : 0;
 
-  return Math.min(elpacContribution + otherContribution, 100);
+  return elpacContribution + otherContribution;
 };
 
 /**
