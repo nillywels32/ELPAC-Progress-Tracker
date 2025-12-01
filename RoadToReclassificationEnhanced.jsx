@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Target, Award, CheckCircle, XCircle, BookOpen, GraduationCap, MapPin, FileText, BarChart3, Save, RefreshCw } from 'lucide-react';
+import { Target, Award, CheckCircle, XCircle, BookOpen, GraduationCap, MapPin, FileText, BarChart3, Save, RefreshCw, Info, HelpCircle, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Import utility functions
@@ -54,6 +54,31 @@ const RoadToReclassificationEnhanced = () => {
 
   // Get assessment data for current grade
   const assessmentData = getAssessmentData(selectedGrade);
+
+  // Validation helpers
+  const isValidElpacScore = (score) => {
+    if (!score) return true; // Empty is valid (not yet entered)
+    const num = parseInt(score);
+    return num >= 1150 && num <= 1900;
+  };
+
+  const isValidSbacScore = (score) => {
+    if (!score) return true;
+    const num = parseInt(score);
+    return num >= 2000 && num <= 3000;
+  };
+
+  const isValidIReadyScore = (score) => {
+    if (!score) return true;
+    const num = parseInt(score);
+    return num >= 100 && num <= 800;
+  };
+
+  const isValidEdciteScore = (score) => {
+    if (!score) return true;
+    const num = parseInt(score);
+    return num >= 0 && num <= 100;
+  };
 
   // Calculate ELPAC results
   const elpacOverallScore = calculateElpacOverallScore(elpacOralScore, elpacWrittenScore);
@@ -202,19 +227,70 @@ const RoadToReclassificationEnhanced = () => {
               <MapPin className="text-blue-600" size={40} />
               <h1 className="text-4xl font-bold text-gray-800">Road to Reclassification</h1>
             </div>
-            <p className="text-gray-600 text-lg mb-4">
+            <p className="text-gray-600 text-lg mb-6">
               Track your progress across all five assessment pathways
             </p>
 
-            {/* Student Name Input */}
+            {/* Welcome Instructions Card */}
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="max-w-3xl mx-auto mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-6 shadow-md"
+            >
+              <div className="flex items-start gap-3">
+                <Info className="text-blue-600 flex-shrink-0 mt-1" size={24} />
+                <div className="text-left">
+                  <h2 className="text-xl font-bold text-blue-900 mb-3">How to Use This Tracker</h2>
+                  <ol className="space-y-2 text-sm text-gray-700">
+                    <li className="flex gap-2">
+                      <span className="font-bold text-blue-600">1.</span>
+                      <span><strong>Enter your name</strong> and select your grade level (7th or 8th)</span>
+                    </li>
+                    <li className="flex gap-2">
+                      <span className="font-bold text-blue-600">2.</span>
+                      <span><strong>Enter your test scores</strong> as you receive them from your teacher</span>
+                    </li>
+                    <li className="flex gap-2">
+                      <span className="font-bold text-blue-600">3.</span>
+                      <span><strong>Watch your progress</strong> update automatically with charts and graphs</span>
+                    </li>
+                    <li className="flex gap-2">
+                      <span className="font-bold text-blue-600">4.</span>
+                      <span><strong>Your data saves automatically</strong> - come back anytime to update scores!</span>
+                    </li>
+                  </ol>
+                  <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <p className="text-sm font-semibold text-yellow-900 flex items-center gap-2">
+                      <AlertCircle size={18} className="flex-shrink-0" />
+                      <span><strong>Remember:</strong> You need <strong>BOTH</strong> ELPAC Level 4 (required) + ONE other assessment to qualify for reclassification!</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Student Name Input - Enhanced */}
             <div className="max-w-md mx-auto mb-4">
+              <label className="block text-sm font-bold text-gray-700 mb-2 text-left">
+                Your Name
+              </label>
               <input
                 type="text"
                 value={studentName}
                 onChange={(e) => setStudentName(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center"
-                placeholder="Enter your name"
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center text-lg font-medium"
+                placeholder="Enter your full name here"
               />
+              {studentName && (
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-sm text-green-600 mt-2 flex items-center justify-center gap-1"
+                >
+                  <CheckCircle size={16} />
+                  Welcome, {studentName}! Your progress is being saved.
+                </motion.p>
+              )}
             </div>
 
             {/* Grade Selection */}
@@ -341,38 +417,88 @@ const RoadToReclassificationEnhanced = () => {
 
               <div className="grid md:grid-cols-2 gap-6 mb-6">
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
+                  <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
                     🗣️ Oral Language Score
+                    <div className="group relative">
+                      <HelpCircle size={16} className="text-gray-400 cursor-help" />
+                      <div className="hidden group-hover:block absolute z-10 w-48 p-2 bg-gray-800 text-white text-xs rounded shadow-lg -top-2 left-6">
+                        This is your combined Listening + Speaking score from your ELPAC test results
+                      </div>
+                    </div>
                   </label>
-                  <p className="text-xs text-gray-600 mb-2">Listening + Speaking Combined</p>
+                  <p className="text-xs text-gray-500 mb-2 flex items-center gap-1">
+                    <Info size={12} />
+                    Valid range: 1150-1900
+                  </p>
                   <ScaleOnChange trigger={elpacOralScore}>
                     <input
                       type="number"
                       value={elpacOralScore}
                       onChange={(e) => setElpacOralScore(e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      placeholder="Enter Oral Language score (1150-1900)"
+                      className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-indigo-500 transition-colors ${
+                        elpacOralScore && !isValidElpacScore(elpacOralScore)
+                          ? 'border-red-400 bg-red-50'
+                          : elpacOralScore
+                          ? 'border-green-400 bg-green-50'
+                          : 'border-gray-300'
+                      }`}
+                      placeholder="e.g., 1550"
                       min="1150"
                       max="1900"
                     />
                   </ScaleOnChange>
+                  {elpacOralScore && !isValidElpacScore(elpacOralScore) && (
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="text-xs text-red-600 mt-1 flex items-center gap-1"
+                    >
+                      <AlertCircle size={12} />
+                      Score must be between 1150 and 1900
+                    </motion.p>
+                  )}
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
+                  <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
                     📝 Written Language Score
+                    <div className="group relative">
+                      <HelpCircle size={16} className="text-gray-400 cursor-help" />
+                      <div className="hidden group-hover:block absolute z-10 w-48 p-2 bg-gray-800 text-white text-xs rounded shadow-lg -top-2 left-6">
+                        This is your combined Reading + Writing score from your ELPAC test results
+                      </div>
+                    </div>
                   </label>
-                  <p className="text-xs text-gray-600 mb-2">Reading + Writing Combined</p>
+                  <p className="text-xs text-gray-500 mb-2 flex items-center gap-1">
+                    <Info size={12} />
+                    Valid range: 1150-1900
+                  </p>
                   <ScaleOnChange trigger={elpacWrittenScore}>
                     <input
                       type="number"
                       value={elpacWrittenScore}
                       onChange={(e) => setElpacWrittenScore(e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      placeholder="Enter Written Language score (1150-1900)"
+                      className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-indigo-500 transition-colors ${
+                        elpacWrittenScore && !isValidElpacScore(elpacWrittenScore)
+                          ? 'border-red-400 bg-red-50'
+                          : elpacWrittenScore
+                          ? 'border-green-400 bg-green-50'
+                          : 'border-gray-300'
+                      }`}
+                      placeholder="e.g., 1600"
                       min="1150"
                       max="1900"
                     />
                   </ScaleOnChange>
+                  {elpacWrittenScore && !isValidElpacScore(elpacWrittenScore) && (
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="text-xs text-red-600 mt-1 flex items-center gap-1"
+                    >
+                      <AlertCircle size={12} />
+                      Score must be between 1150 and 1900
+                    </motion.p>
+                  )}
                 </div>
               </div>
 
@@ -446,22 +572,53 @@ const RoadToReclassificationEnhanced = () => {
                 <p className="text-sm text-blue-700">Minimum Score: {selectedGrade === 7 ? '2479' : '2487'}</p>
               </div>
 
-              <ScaleOnChange trigger={sbacScore}>
-                <input
-                  type="number"
-                  value={sbacScore}
-                  onChange={(e) => setSbacScore(e.target.value)}
-                  className="w-full px-4 py-3 border rounded-lg mb-4 focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter SBAC ELA score"
-                />
-              </ScaleOnChange>
+              <div className="mb-4">
+                <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
+                  Your SBAC ELA Score
+                  <div className="group relative">
+                    <HelpCircle size={16} className="text-gray-400 cursor-help" />
+                    <div className="hidden group-hover:block absolute z-10 w-56 p-2 bg-gray-800 text-white text-xs rounded shadow-lg -top-2 left-6">
+                      This is your total score from the SBAC English Language Arts test. Ask your teacher if you don't have this yet!
+                    </div>
+                  </div>
+                </label>
+                <p className="text-xs text-gray-500 mb-2 flex items-center gap-1">
+                  <Info size={12} />
+                  Typical range: 2000-3000
+                </p>
+                <ScaleOnChange trigger={sbacScore}>
+                  <input
+                    type="number"
+                    value={sbacScore}
+                    onChange={(e) => setSbacScore(e.target.value)}
+                    className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 transition-colors ${
+                      sbacScore && !isValidSbacScore(sbacScore)
+                        ? 'border-red-400 bg-red-50'
+                        : sbacScore
+                        ? 'border-green-400 bg-green-50'
+                        : 'border-gray-300'
+                    }`}
+                    placeholder="e.g., 2500"
+                  />
+                </ScaleOnChange>
+                {sbacScore && !isValidSbacScore(sbacScore) && (
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-xs text-red-600 mt-1 flex items-center gap-1"
+                  >
+                    <AlertCircle size={12} />
+                    Please check your score - typical range is 2000-3000
+                  </motion.p>
+                )}
+              </div>
 
               {sbacResult && (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   className={`p-4 rounded-lg ${
-                    sbacResult.meets ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                    sbacResult.meets ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'
                   }`}
                 >
                   <p className="font-semibold">Level: {sbacResult.level}</p>
@@ -515,15 +672,46 @@ const RoadToReclassificationEnhanced = () => {
                 <p className="text-2xl font-bold text-purple-600">{iReadyTarget}</p>
               </div>
 
-              <ScaleOnChange trigger={iReadyScore}>
-                <input
-                  type="number"
-                  value={iReadyScore}
-                  onChange={(e) => setIReadyScore(e.target.value)}
-                  className="w-full px-4 py-3 border rounded-lg mb-4 focus:ring-2 focus:ring-purple-500"
-                  placeholder="Enter i-Ready score"
-                />
-              </ScaleOnChange>
+              <div className="mb-4">
+                <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
+                  Your i-Ready Reading Score
+                  <div className="group relative">
+                    <HelpCircle size={16} className="text-gray-400 cursor-help" />
+                    <div className="hidden group-hover:block absolute z-10 w-56 p-2 bg-gray-800 text-white text-xs rounded shadow-lg -top-2 left-6">
+                      This is your overall scale score from the i-Ready Reading diagnostic test
+                    </div>
+                  </div>
+                </label>
+                <p className="text-xs text-gray-500 mb-2 flex items-center gap-1">
+                  <Info size={12} />
+                  Typical range: 100-800
+                </p>
+                <ScaleOnChange trigger={iReadyScore}>
+                  <input
+                    type="number"
+                    value={iReadyScore}
+                    onChange={(e) => setIReadyScore(e.target.value)}
+                    className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-purple-500 transition-colors ${
+                      iReadyScore && !isValidIReadyScore(iReadyScore)
+                        ? 'border-red-400 bg-red-50'
+                        : iReadyScore
+                        ? 'border-green-400 bg-green-50'
+                        : 'border-gray-300'
+                    }`}
+                    placeholder="e.g., 570"
+                  />
+                </ScaleOnChange>
+                {iReadyScore && !isValidIReadyScore(iReadyScore) && (
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-xs text-red-600 mt-1 flex items-center gap-1"
+                  >
+                    <AlertCircle size={12} />
+                    Please check your score - typical range is 100-800
+                  </motion.p>
+                )}
+              </div>
 
               {iReadyScore && (
                 <motion.div
@@ -565,15 +753,46 @@ const RoadToReclassificationEnhanced = () => {
                 <p className="text-2xl font-bold text-green-600">{assessmentData.edciteA}</p>
               </div>
 
-              <ScaleOnChange trigger={edciteAScore}>
-                <input
-                  type="number"
-                  value={edciteAScore}
-                  onChange={(e) => setEdciteAScore(e.target.value)}
-                  className="w-full px-4 py-3 border rounded-lg mb-4 focus:ring-2 focus:ring-green-500"
-                  placeholder="Enter Edcite A score"
-                />
-              </ScaleOnChange>
+              <div className="mb-4">
+                <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
+                  Your Edcite A Score
+                  <div className="group relative">
+                    <HelpCircle size={16} className="text-gray-400 cursor-help" />
+                    <div className="hidden group-hover:block absolute z-10 w-56 p-2 bg-gray-800 text-white text-xs rounded shadow-lg -top-2 left-6">
+                      This is your percentage score from the first semester Edcite assessment
+                    </div>
+                  </div>
+                </label>
+                <p className="text-xs text-gray-500 mb-2 flex items-center gap-1">
+                  <Info size={12} />
+                  Percentage score (0-100)
+                </p>
+                <ScaleOnChange trigger={edciteAScore}>
+                  <input
+                    type="number"
+                    value={edciteAScore}
+                    onChange={(e) => setEdciteAScore(e.target.value)}
+                    className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-green-500 transition-colors ${
+                      edciteAScore && !isValidEdciteScore(edciteAScore)
+                        ? 'border-red-400 bg-red-50'
+                        : edciteAScore
+                        ? 'border-green-400 bg-green-50'
+                        : 'border-gray-300'
+                    }`}
+                    placeholder="e.g., 45"
+                  />
+                </ScaleOnChange>
+                {edciteAScore && !isValidEdciteScore(edciteAScore) && (
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-xs text-red-600 mt-1 flex items-center gap-1"
+                  >
+                    <AlertCircle size={12} />
+                    Score must be between 0 and 100
+                  </motion.p>
+                )}
+              </div>
 
               {edciteAScore && (
                 <motion.div
@@ -615,15 +834,46 @@ const RoadToReclassificationEnhanced = () => {
                 <p className="text-2xl font-bold text-orange-600">{assessmentData.edciteB}</p>
               </div>
 
-              <ScaleOnChange trigger={edciteBScore}>
-                <input
-                  type="number"
-                  value={edciteBScore}
-                  onChange={(e) => setEdciteBScore(e.target.value)}
-                  className="w-full px-4 py-3 border rounded-lg mb-4 focus:ring-2 focus:ring-orange-500"
-                  placeholder="Enter Edcite B score"
-                />
-              </ScaleOnChange>
+              <div className="mb-4">
+                <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
+                  Your Edcite B Score
+                  <div className="group relative">
+                    <HelpCircle size={16} className="text-gray-400 cursor-help" />
+                    <div className="hidden group-hover:block absolute z-10 w-56 p-2 bg-gray-800 text-white text-xs rounded shadow-lg -top-2 left-6">
+                      This is your percentage score from the second semester Edcite assessment
+                    </div>
+                  </div>
+                </label>
+                <p className="text-xs text-gray-500 mb-2 flex items-center gap-1">
+                  <Info size={12} />
+                  Percentage score (0-100)
+                </p>
+                <ScaleOnChange trigger={edciteBScore}>
+                  <input
+                    type="number"
+                    value={edciteBScore}
+                    onChange={(e) => setEdciteBScore(e.target.value)}
+                    className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-orange-500 transition-colors ${
+                      edciteBScore && !isValidEdciteScore(edciteBScore)
+                        ? 'border-red-400 bg-red-50'
+                        : edciteBScore
+                        ? 'border-green-400 bg-green-50'
+                        : 'border-gray-300'
+                    }`}
+                    placeholder="e.g., 42"
+                  />
+                </ScaleOnChange>
+                {edciteBScore && !isValidEdciteScore(edciteBScore) && (
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-xs text-red-600 mt-1 flex items-center gap-1"
+                  >
+                    <AlertCircle size={12} />
+                    Score must be between 0 and 100
+                  </motion.p>
+                )}
+              </div>
 
               {edciteBScore && (
                 <motion.div
