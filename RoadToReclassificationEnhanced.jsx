@@ -369,14 +369,170 @@ const RoadToReclassificationEnhanced = () => {
                 </div>
               </div>
 
-              {/* Overall Progress Circle */}
-              <div className="flex justify-center mt-6">
-                <AnimatedCircleProgress
-                  progress={overallProgress}
-                  size={180}
-                  strokeWidth={12}
-                  canReclassify={canReclassify}
-                />
+              {/* Status Card */}
+              <div className="mt-6">
+                <div className={`border-2 rounded-xl p-6 ${
+                  canReclassify
+                    ? 'bg-green-50 border-green-400'
+                    : 'bg-white border-gray-300'
+                }`}>
+                  <div className="text-center mb-4">
+                    <h3 className={`text-2xl font-bold mb-2 ${
+                      canReclassify ? 'text-green-800' : 'text-gray-800'
+                    }`}>
+                      {canReclassify ? '✅ YOU QUALIFY!' : '📊 YOUR STATUS'}
+                    </h3>
+                    <p className={`text-xl font-semibold ${
+                      canReclassify ? 'text-green-700' : 'text-orange-700'
+                    }`}>
+                      {canReclassify ? 'Ready for Reclassification' : 'Not Yet Qualifying'}
+                    </p>
+                  </div>
+
+                  <div className="space-y-4">
+                    {/* ELPAC Requirement */}
+                    <div className={`p-4 rounded-lg border-2 ${
+                      elpacMeets
+                        ? 'bg-green-100 border-green-400'
+                        : 'bg-orange-50 border-orange-300'
+                    }`}>
+                      <div className="flex items-start gap-3">
+                        <div className="text-2xl">
+                          {elpacMeets ? '✅' : '❌'}
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-bold text-gray-800 mb-1">
+                            ELPAC Level 4 (Required)
+                          </h4>
+                          {elpacResult ? (
+                            <>
+                              <p className="text-sm text-gray-700">
+                                You: <span className="font-semibold">Level {elpacResult.level}</span> ({elpacResult.overallScore})
+                                {' | '}Need: Level 4 ({selectedGrade === 7 ? '1576+' : '1590+'})
+                              </p>
+                              {!elpacMeets && (
+                                <p className="text-sm font-semibold text-orange-700 mt-1">
+                                  Gap: {(selectedGrade === 7 ? 1576 : 1590) - elpacResult.overallScore} points needed
+                                </p>
+                              )}
+                            </>
+                          ) : (
+                            <p className="text-sm text-gray-600">Enter your ELPAC scores above</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Other Assessments */}
+                    <div className={`p-4 rounded-lg border-2 ${
+                      otherAssessmentsMet > 0
+                        ? 'bg-green-100 border-green-400'
+                        : 'bg-orange-50 border-orange-300'
+                    }`}>
+                      <div className="flex items-start gap-3">
+                        <div className="text-2xl">
+                          {otherAssessmentsMet > 0 ? '✅' : '❌'}
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-bold text-gray-800 mb-2">
+                            Pass ONE of These Assessments
+                          </h4>
+                          <div className="space-y-2 text-sm">
+                            {/* SBAC */}
+                            {sbacScore && (
+                              <div className={`flex items-center gap-2 ${sbacResult?.meets ? 'text-green-700' : 'text-gray-700'}`}>
+                                {sbacResult?.meets ? '✅' : '⭕'}
+                                <span>SBAC: {sbacScore}/{selectedGrade === 7 ? '2479' : '2487'}</span>
+                                {!sbacResult?.meets && sbacScore && (
+                                  <span className="text-orange-600 font-semibold">
+                                    ({(selectedGrade === 7 ? 2479 : 2487) - parseInt(sbacScore)} away)
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                            {/* i-Ready */}
+                            {iReadyScore && (
+                              <div className={`flex items-center gap-2 ${iReadyMeets ? 'text-green-700' : 'text-gray-700'}`}>
+                                {iReadyMeets ? '✅' : '⭕'}
+                                <span>i-Ready: {iReadyScore}/{iReadyTarget}</span>
+                                {!iReadyMeets && iReadyScore && (
+                                  <span className="text-orange-600 font-semibold">
+                                    ({iReadyTarget - parseInt(iReadyScore)} away) 🎯
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                            {/* Edcite A */}
+                            {edciteAScore && (
+                              <div className={`flex items-center gap-2 ${edciteAMeets ? 'text-green-700' : 'text-gray-700'}`}>
+                                {edciteAMeets ? '✅' : '⭕'}
+                                <span>Edcite A: {edciteAScore}/{assessmentData.edciteA}</span>
+                                {!edciteAMeets && edciteAScore && (
+                                  <span className="text-orange-600 font-semibold">
+                                    ({assessmentData.edciteA - parseInt(edciteAScore)} away)
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                            {/* Edcite B */}
+                            {edciteBScore && (
+                              <div className={`flex items-center gap-2 ${edciteBMeets ? 'text-green-700' : 'text-gray-700'}`}>
+                                {edciteBMeets ? '✅' : '⭕'}
+                                <span>Edcite B: {edciteBScore}/{assessmentData.edciteB}</span>
+                                {!edciteBMeets && edciteBScore && (
+                                  <span className="text-orange-600 font-semibold">
+                                    ({assessmentData.edciteB - parseInt(edciteBScore)} away)
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                            {/* Show message if no other assessments entered */}
+                            {!sbacScore && !iReadyScore && !edciteAScore && !edciteBScore && (
+                              <p className="text-gray-600 italic">Enter at least one optional assessment above</p>
+                            )}
+                            {/* Show count of passed assessments */}
+                            {otherAssessmentsMet > 0 && (
+                              <p className="font-semibold text-green-700 mt-2">
+                                ✨ {otherAssessmentsMet} assessment{otherAssessmentsMet > 1 ? 's' : ''} passed!
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Next Steps */}
+                    {!canReclassify && (
+                      <div className="bg-blue-50 border-2 border-blue-300 rounded-lg p-4">
+                        <h4 className="font-bold text-blue-800 mb-2 flex items-center gap-2">
+                          <Target size={20} />
+                          Your Next Goal:
+                        </h4>
+                        <p className="text-sm text-blue-700">
+                          {!elpacMeets && elpacResult ? (
+                            <>Focus on reaching ELPAC Level 4! You need {(selectedGrade === 7 ? 1576 : 1590) - elpacResult.overallScore} more points.</>
+                          ) : !elpacMeets ? (
+                            <>Take the ELPAC assessment and aim for Level 4!</>
+                          ) : otherAssessmentsMet === 0 ? (
+                            <>Great job on ELPAC! Now pass just ONE other assessment to qualify.</>
+                          ) : null}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Success Message */}
+                    {canReclassify && (
+                      <div className="bg-gradient-to-r from-green-100 to-emerald-100 border-2 border-green-400 rounded-lg p-4 text-center">
+                        <p className="text-lg font-bold text-green-800 mb-2">
+                          🎉 Congratulations!
+                        </p>
+                        <p className="text-sm text-green-700">
+                          You've met both requirements! Talk to your counselor about reclassification.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
