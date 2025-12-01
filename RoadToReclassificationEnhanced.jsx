@@ -887,25 +887,9 @@ const RoadToReclassificationEnhanced = () => {
             transition={{ delay: 0.7 }}
             className="space-y-8 mb-8"
           >
-            {/* Comparison Bar Chart */}
+            {/* Progress Comparison Chart */}
             <div id="comparison-chart">
               <ComparisonBarChart assessmentData={assessmentProgressData} grade={selectedGrade} />
-            </div>
-
-            {/* ELPAC Breakdown Chart */}
-            {elpacOralScore && elpacWrittenScore && (
-              <div id="elpac-breakdown-chart">
-                <ElpacBreakdownChart
-                  oralScore={elpacOralScore}
-                  writtenScore={elpacWrittenScore}
-                  grade={selectedGrade}
-                />
-              </div>
-            )}
-
-            {/* Achievement Radar Chart */}
-            <div id="radar-chart">
-              <AchievementRadarChart assessmentData={assessmentProgressData} />
             </div>
           </motion.div>
         )}
