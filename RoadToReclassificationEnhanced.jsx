@@ -430,23 +430,21 @@ const RoadToReclassificationEnhanced = () => {
                     <Info size={12} />
                     Valid range: 1150-1900
                   </p>
-                  <ScaleOnChange trigger={elpacOralScore}>
-                    <input
-                      type="number"
-                      value={elpacOralScore}
-                      onChange={(e) => setElpacOralScore(e.target.value)}
-                      className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-indigo-500 transition-colors ${
-                        elpacOralScore && !isValidElpacScore(elpacOralScore)
-                          ? 'border-red-400 bg-red-50'
-                          : elpacOralScore
-                          ? 'border-green-400 bg-green-50'
-                          : 'border-gray-300'
-                      }`}
-                      placeholder="e.g., 1550"
-                      min="1150"
-                      max="1900"
-                    />
-                  </ScaleOnChange>
+                  <input
+                    type="number"
+                    value={elpacOralScore}
+                    onChange={(e) => setElpacOralScore(e.target.value)}
+                    className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-indigo-500 transition-colors ${
+                      elpacOralScore && !isValidElpacScore(elpacOralScore)
+                        ? 'border-red-400 bg-red-50'
+                        : elpacOralScore
+                        ? 'border-green-400 bg-green-50'
+                        : 'border-gray-300'
+                    }`}
+                    placeholder="e.g., 1550"
+                    min="1150"
+                    max="1900"
+                  />
                   {elpacOralScore && !isValidElpacScore(elpacOralScore) && (
                     <motion.p
                       initial={{ opacity: 0 }}
@@ -472,23 +470,21 @@ const RoadToReclassificationEnhanced = () => {
                     <Info size={12} />
                     Valid range: 1150-1900
                   </p>
-                  <ScaleOnChange trigger={elpacWrittenScore}>
-                    <input
-                      type="number"
-                      value={elpacWrittenScore}
-                      onChange={(e) => setElpacWrittenScore(e.target.value)}
-                      className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-indigo-500 transition-colors ${
-                        elpacWrittenScore && !isValidElpacScore(elpacWrittenScore)
-                          ? 'border-red-400 bg-red-50'
-                          : elpacWrittenScore
-                          ? 'border-green-400 bg-green-50'
-                          : 'border-gray-300'
-                      }`}
-                      placeholder="e.g., 1600"
-                      min="1150"
-                      max="1900"
-                    />
-                  </ScaleOnChange>
+                  <input
+                    type="number"
+                    value={elpacWrittenScore}
+                    onChange={(e) => setElpacWrittenScore(e.target.value)}
+                    className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-indigo-500 transition-colors ${
+                      elpacWrittenScore && !isValidElpacScore(elpacWrittenScore)
+                        ? 'border-red-400 bg-red-50'
+                        : elpacWrittenScore
+                        ? 'border-green-400 bg-green-50'
+                        : 'border-gray-300'
+                    }`}
+                    placeholder="e.g., 1600"
+                    min="1150"
+                    max="1900"
+                  />
                   {elpacWrittenScore && !isValidElpacScore(elpacWrittenScore) && (
                     <motion.p
                       initial={{ opacity: 0 }}
@@ -586,21 +582,19 @@ const RoadToReclassificationEnhanced = () => {
                   <Info size={12} />
                   Typical range: 2000-3000
                 </p>
-                <ScaleOnChange trigger={sbacScore}>
-                  <input
-                    type="number"
-                    value={sbacScore}
-                    onChange={(e) => setSbacScore(e.target.value)}
-                    className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 transition-colors ${
-                      sbacScore && !isValidSbacScore(sbacScore)
-                        ? 'border-red-400 bg-red-50'
-                        : sbacScore
-                        ? 'border-green-400 bg-green-50'
-                        : 'border-gray-300'
-                    }`}
-                    placeholder="e.g., 2500"
-                  />
-                </ScaleOnChange>
+                <input
+                  type="number"
+                  value={sbacScore}
+                  onChange={(e) => setSbacScore(e.target.value)}
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 transition-colors ${
+                    sbacScore && !isValidSbacScore(sbacScore)
+                      ? 'border-red-400 bg-red-50'
+                      : sbacScore
+                      ? 'border-green-400 bg-green-50'
+                      : 'border-gray-300'
+                  }`}
+                  placeholder="e.g., 2500"
+                />
                 {sbacScore && !isValidSbacScore(sbacScore) && (
                   <motion.p
                     initial={{ opacity: 0 }}
@@ -686,21 +680,19 @@ const RoadToReclassificationEnhanced = () => {
                   <Info size={12} />
                   Typical range: 100-800
                 </p>
-                <ScaleOnChange trigger={iReadyScore}>
-                  <input
-                    type="number"
-                    value={iReadyScore}
-                    onChange={(e) => setIReadyScore(e.target.value)}
-                    className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-purple-500 transition-colors ${
-                      iReadyScore && !isValidIReadyScore(iReadyScore)
-                        ? 'border-red-400 bg-red-50'
-                        : iReadyScore
-                        ? 'border-green-400 bg-green-50'
-                        : 'border-gray-300'
-                    }`}
-                    placeholder="e.g., 570"
-                  />
-                </ScaleOnChange>
+                <input
+                  type="number"
+                  value={iReadyScore}
+                  onChange={(e) => setIReadyScore(e.target.value)}
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-purple-500 transition-colors ${
+                    iReadyScore && !isValidIReadyScore(iReadyScore)
+                      ? 'border-red-400 bg-red-50'
+                      : iReadyScore
+                      ? 'border-green-400 bg-green-50'
+                      : 'border-gray-300'
+                  }`}
+                  placeholder="e.g., 570"
+                />
                 {iReadyScore && !isValidIReadyScore(iReadyScore) && (
                   <motion.p
                     initial={{ opacity: 0 }}
@@ -767,21 +759,19 @@ const RoadToReclassificationEnhanced = () => {
                   <Info size={12} />
                   Percentage score (0-100)
                 </p>
-                <ScaleOnChange trigger={edciteAScore}>
-                  <input
-                    type="number"
-                    value={edciteAScore}
-                    onChange={(e) => setEdciteAScore(e.target.value)}
-                    className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-green-500 transition-colors ${
-                      edciteAScore && !isValidEdciteScore(edciteAScore)
-                        ? 'border-red-400 bg-red-50'
-                        : edciteAScore
-                        ? 'border-green-400 bg-green-50'
-                        : 'border-gray-300'
-                    }`}
-                    placeholder="e.g., 45"
-                  />
-                </ScaleOnChange>
+                <input
+                  type="number"
+                  value={edciteAScore}
+                  onChange={(e) => setEdciteAScore(e.target.value)}
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-green-500 transition-colors ${
+                    edciteAScore && !isValidEdciteScore(edciteAScore)
+                      ? 'border-red-400 bg-red-50'
+                      : edciteAScore
+                      ? 'border-green-400 bg-green-50'
+                      : 'border-gray-300'
+                  }`}
+                  placeholder="e.g., 45"
+                />
                 {edciteAScore && !isValidEdciteScore(edciteAScore) && (
                   <motion.p
                     initial={{ opacity: 0 }}
@@ -848,21 +838,19 @@ const RoadToReclassificationEnhanced = () => {
                   <Info size={12} />
                   Percentage score (0-100)
                 </p>
-                <ScaleOnChange trigger={edciteBScore}>
-                  <input
-                    type="number"
-                    value={edciteBScore}
-                    onChange={(e) => setEdciteBScore(e.target.value)}
-                    className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-orange-500 transition-colors ${
-                      edciteBScore && !isValidEdciteScore(edciteBScore)
-                        ? 'border-red-400 bg-red-50'
-                        : edciteBScore
-                        ? 'border-green-400 bg-green-50'
-                        : 'border-gray-300'
-                    }`}
-                    placeholder="e.g., 42"
-                  />
-                </ScaleOnChange>
+                <input
+                  type="number"
+                  value={edciteBScore}
+                  onChange={(e) => setEdciteBScore(e.target.value)}
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-orange-500 transition-colors ${
+                    edciteBScore && !isValidEdciteScore(edciteBScore)
+                      ? 'border-red-400 bg-red-50'
+                      : edciteBScore
+                      ? 'border-green-400 bg-green-50'
+                      : 'border-gray-300'
+                  }`}
+                  placeholder="e.g., 42"
+                />
                 {edciteBScore && !isValidEdciteScore(edciteBScore) && (
                   <motion.p
                     initial={{ opacity: 0 }}
