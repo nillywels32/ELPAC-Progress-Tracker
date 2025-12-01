@@ -383,9 +383,9 @@ const RoadToReclassificationEnhanced = () => {
         </AnimatedCard>
 
         {/* Assessment Input Cards */}
-        <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-8 mb-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           {/* ELPAC Card */}
-          <AnimatedCard delay={0.2} className="lg:col-span-2 xl:col-span-3">
+          <AnimatedCard delay={0.2} className="md:col-span-2 lg:col-span-4">
             <div className={`bg-white rounded-xl p-6 shadow-lg border-3 ${
               elpacResult?.meets ? 'border-green-400' : 'border-indigo-200'
             }`}>
@@ -535,7 +535,7 @@ const RoadToReclassificationEnhanced = () => {
             </div>
           </AnimatedCard>
 
-          <div className="lg:col-span-2 xl:col-span-3">
+          <div className="md:col-span-2 lg:col-span-4">
             <h4 className="text-xl font-bold text-gray-700 text-center mb-4">Additional Requirement: Choose ONE Assessment</h4>
             <p className="text-gray-600 text-center mb-6">
               After achieving ELPAC Level 4, you must ALSO meet the requirement for at least ONE of these assessments:
@@ -800,7 +800,7 @@ const RoadToReclassificationEnhanced = () => {
           </AnimatedCard>
 
           {/* Edcite B Card */}
-          <AnimatedCard delay={0.6} className="lg:col-span-2 xl:col-span-1">
+          <AnimatedCard delay={0.6}>
             <div className={`bg-white rounded-xl p-6 shadow-lg border-3 h-full ${
               edciteBMeets ? 'border-green-400' : 'border-orange-200'
             }`}>
