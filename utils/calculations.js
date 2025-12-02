@@ -28,13 +28,19 @@ export const calculateElpacOverallScore = (oralScore, writtenScore) => {
 /**
  * Determine ELPAC level based on overall score and grade
  * @param {number} overallScore - Overall ELPAC score
- * @param {number} grade - Student grade (7 or 8)
+ * @param {number} grade - Grade when ELPAC was taken (6, 7, or 8)
  * @returns {object} Level information { level, meets, range }
  */
 export const getElpacLevel = (overallScore, grade) => {
-  if (!overallScore || ![7, 8].includes(grade)) return null;
+  if (!overallScore || ![6, 7, 8].includes(grade)) return null;
 
   const levels = {
+    6: {
+      1: { min: 1150, max: 1474, meets: false },
+      2: { min: 1475, max: 1516, meets: false },
+      3: { min: 1517, max: 1566, meets: false },
+      4: { min: 1567, max: 1900, meets: true }
+    },
     7: {
       1: { min: 1150, max: 1480, meets: false },
       2: { min: 1481, max: 1526, meets: false },
@@ -207,15 +213,13 @@ export const meetsRequirement = (score, target) => {
 
 /**
  * Get assessment data for a specific grade
- * @param {number} grade - Student grade (7 or 8)
+ * @param {number} grade - Student's current grade (7 or 8)
  * @returns {object} Assessment requirements
  */
 export const getAssessmentData = (grade) => {
   const data = {
     7: {
       iReady: { cycle1: 562, cycle2: 567 },
-      edciteA: 40,
-      edciteB: 38,
       sbac: { nearlyMet: 2479, met: 2552, exceeded: 2649, max: 2810 },
       elpac: {
         level4Min: 1576,
@@ -229,8 +233,6 @@ export const getAssessmentData = (grade) => {
     },
     8: {
       iReady: { cycle1: 567, cycle2: 567 },
-      edciteA: 41,
-      edciteB: 42,
       sbac: { nearlyMet: 2487, met: 2567, exceeded: 2668, max: 2850 },
       elpac: {
         level4Min: 1590,
@@ -245,6 +247,45 @@ export const getAssessmentData = (grade) => {
   };
 
   return data[grade] || data[7];
+};
+
+/**
+ * Get ELPAC level requirements for the grade when test was taken
+ * @param {number} testGrade - Grade when ELPAC was taken (6, 7, or 8)
+ * @returns {object} ELPAC level ranges for that grade
+ */
+export const getElpacLevelRanges = (testGrade) => {
+  const ranges = {
+    6: {
+      level4Min: 1567,
+      levels: {
+        1: { min: 1150, max: 1474 },
+        2: { min: 1475, max: 1516 },
+        3: { min: 1517, max: 1566 },
+        4: { min: 1567, max: 1900 }
+      }
+    },
+    7: {
+      level4Min: 1576,
+      levels: {
+        1: { min: 1150, max: 1480 },
+        2: { min: 1481, max: 1526 },
+        3: { min: 1527, max: 1575 },
+        4: { min: 1576, max: 1900 }
+      }
+    },
+    8: {
+      level4Min: 1590,
+      levels: {
+        1: { min: 1150, max: 1485 },
+        2: { min: 1486, max: 1533 },
+        3: { min: 1534, max: 1589 },
+        4: { min: 1590, max: 1900 }
+      }
+    }
+  };
+
+  return ranges[testGrade] || ranges[7];
 };
 
 /**

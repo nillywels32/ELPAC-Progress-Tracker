@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Target, Award, CheckCircle, XCircle, BookOpen, GraduationCap, MapPin, FileText, BarChart3, Save, RefreshCw, Info, HelpCircle, AlertCircle } from 'lucide-react';
+import { Target, Award, CheckCircle, XCircle, BookOpen, GraduationCap, MapPin, BarChart3, Save, RefreshCw, Info, HelpCircle, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Import utility functions
@@ -36,12 +36,11 @@ const RoadToReclassificationEnhanced = () => {
   const [selectedGrade, setSelectedGrade] = useState(7);
   const [selectedCycle, setSelectedCycle] = useState(1);
   const [studentName, setStudentName] = useState('');
+  const [elpacTestGrade, setElpacTestGrade] = useState(7); // Grade when ELPAC was taken
 
   // Assessment Scores
   const [sbacScore, setSbacScore] = useState('');
   const [iReadyScore, setIReadyScore] = useState('');
-  const [edciteAScore, setEdciteAScore] = useState('');
-  const [edciteBScore, setEdciteBScore] = useState('');
 
   // ELPAC Scores
   const [elpacOralScore, setElpacOralScore] = useState('');
@@ -74,16 +73,10 @@ const RoadToReclassificationEnhanced = () => {
     return num >= 100 && num <= 800;
   };
 
-  const isValidEdciteScore = (score) => {
-    if (!score) return true;
-    const num = parseInt(score);
-    return num >= 0 && num <= 100;
-  };
-
-  // Calculate ELPAC results
+  // Calculate ELPAC results using the grade when test was taken
   const elpacOverallScore = calculateElpacOverallScore(elpacOralScore, elpacWrittenScore);
   const elpacResult = elpacOverallScore ? {
-    ...getElpacLevel(elpacOverallScore, selectedGrade),
+    ...getElpacLevel(elpacOverallScore, elpacTestGrade),
     overallScore: elpacOverallScore,
     oralScore: parseInt(elpacOralScore),
     writtenScore: parseInt(elpacWrittenScore)
@@ -93,12 +86,10 @@ const RoadToReclassificationEnhanced = () => {
   const sbacResult = sbacScore ? getSbacLevel(sbacScore, selectedGrade) : null;
   const iReadyTarget = assessmentData.iReady[selectedCycle === 1 ? 'cycle1' : 'cycle2'];
   const iReadyMeets = iReadyScore ? meetsRequirement(iReadyScore, iReadyTarget) : false;
-  const edciteAMeets = edciteAScore ? meetsRequirement(edciteAScore, assessmentData.edciteA) : false;
-  const edciteBMeets = edciteBScore ? meetsRequirement(edciteBScore, assessmentData.edciteB) : false;
 
   // Calculate reclassification status
   const elpacMeets = elpacResult?.meets || false;
-  const otherAssessmentsMet = [sbacResult?.meets, iReadyMeets, edciteAMeets, edciteBMeets].filter(Boolean).length;
+  const otherAssessmentsMet = [sbacResult?.meets, iReadyMeets].filter(Boolean).length;
   const canReclassify = elpacMeets && otherAssessmentsMet > 0;
 
   // Prepare data for charts
@@ -126,22 +117,6 @@ const RoadToReclassificationEnhanced = () => {
       target: iReadyTarget,
       meets: iReadyMeets,
       shortfall: iReadyMeets ? 0 : iReadyTarget - parseInt(iReadyScore)
-    },
-    edciteAScore && {
-      name: 'Edcite A',
-      shortName: 'Edcite A',
-      score: parseInt(edciteAScore),
-      target: assessmentData.edciteA,
-      meets: edciteAMeets,
-      shortfall: edciteAMeets ? 0 : assessmentData.edciteA - parseInt(edciteAScore)
-    },
-    edciteBScore && {
-      name: 'Edcite B',
-      shortName: 'Edcite B',
-      score: parseInt(edciteBScore),
-      target: assessmentData.edciteB,
-      meets: edciteBMeets,
-      shortfall: edciteBMeets ? 0 : assessmentData.edciteB - parseInt(edciteBScore)
     }
   ].filter(Boolean);
 
@@ -160,10 +135,9 @@ const RoadToReclassificationEnhanced = () => {
         selectedGrade,
         selectedCycle,
         studentName,
+        elpacTestGrade,
         sbacScore,
         iReadyScore,
-        edciteAScore,
-        edciteBScore,
         elpacOralScore,
         elpacWrittenScore
       };
@@ -175,7 +149,7 @@ const RoadToReclassificationEnhanced = () => {
 
       return () => clearTimeout(timer);
     }
-  }, [autoSaveEnabled, selectedGrade, selectedCycle, studentName, sbacScore, iReadyScore, edciteAScore, edciteBScore, elpacOralScore, elpacWrittenScore]);
+  }, [autoSaveEnabled, selectedGrade, selectedCycle, studentName, elpacTestGrade, sbacScore, iReadyScore, elpacOralScore, elpacWrittenScore]);
 
   // Load saved data on mount
   useEffect(() => {
@@ -184,10 +158,9 @@ const RoadToReclassificationEnhanced = () => {
       setSelectedGrade(savedData.selectedGrade || 7);
       setSelectedCycle(savedData.selectedCycle || 1);
       setStudentName(savedData.studentName || '');
+      setElpacTestGrade(savedData.elpacTestGrade || 7);
       setSbacScore(savedData.sbacScore || '');
       setIReadyScore(savedData.iReadyScore || '');
-      setEdciteAScore(savedData.edciteAScore || '');
-      setEdciteBScore(savedData.edciteBScore || '');
       setElpacOralScore(savedData.elpacOralScore || '');
       setElpacWrittenScore(savedData.elpacWrittenScore || '');
     }
@@ -206,8 +179,6 @@ const RoadToReclassificationEnhanced = () => {
     sbacResult,
     iReadyScore,
     cycle: selectedCycle,
-    edciteAScore,
-    edciteBScore,
     elpacResult,
     canReclassify,
     elpacMeets,
@@ -228,7 +199,7 @@ const RoadToReclassificationEnhanced = () => {
               <h1 className="text-4xl font-bold text-gray-800">Road to Reclassification</h1>
             </div>
             <p className="text-gray-600 text-lg mb-6">
-              Track your progress across all five assessment pathways
+              Track your progress across all three assessment pathways
             </p>
 
             {/* Welcome Instructions Card */}
@@ -408,11 +379,11 @@ const RoadToReclassificationEnhanced = () => {
                             <>
                               <p className="text-sm text-gray-700">
                                 You: <span className="font-semibold">Level {elpacResult.level}</span> ({elpacResult.overallScore})
-                                {' | '}Need: Level 4 ({selectedGrade === 7 ? '1576+' : '1590+'})
+                                {' | '}Need: Level 4 ({elpacTestGrade === 6 ? '1567+' : elpacTestGrade === 7 ? '1576+' : '1590+'})
                               </p>
                               {!elpacMeets && (
                                 <p className="text-sm font-semibold text-orange-700 mt-1">
-                                  Gap: {(selectedGrade === 7 ? 1576 : 1590) - elpacResult.overallScore} points needed
+                                  Gap: {(elpacTestGrade === 6 ? 1567 : elpacTestGrade === 7 ? 1576 : 1590) - elpacResult.overallScore} points needed
                                 </p>
                               )}
                             </>
@@ -462,32 +433,8 @@ const RoadToReclassificationEnhanced = () => {
                                 )}
                               </div>
                             )}
-                            {/* Edcite A */}
-                            {edciteAScore && (
-                              <div className={`flex items-center gap-2 ${edciteAMeets ? 'text-green-700' : 'text-gray-700'}`}>
-                                {edciteAMeets ? '✅' : '⭕'}
-                                <span>Edcite A: {edciteAScore}/{assessmentData.edciteA}</span>
-                                {!edciteAMeets && edciteAScore && (
-                                  <span className="text-orange-600 font-semibold">
-                                    ({assessmentData.edciteA - parseInt(edciteAScore)} away)
-                                  </span>
-                                )}
-                              </div>
-                            )}
-                            {/* Edcite B */}
-                            {edciteBScore && (
-                              <div className={`flex items-center gap-2 ${edciteBMeets ? 'text-green-700' : 'text-gray-700'}`}>
-                                {edciteBMeets ? '✅' : '⭕'}
-                                <span>Edcite B: {edciteBScore}/{assessmentData.edciteB}</span>
-                                {!edciteBMeets && edciteBScore && (
-                                  <span className="text-orange-600 font-semibold">
-                                    ({assessmentData.edciteB - parseInt(edciteBScore)} away)
-                                  </span>
-                                )}
-                              </div>
-                            )}
                             {/* Show message if no other assessments entered */}
-                            {!sbacScore && !iReadyScore && !edciteAScore && !edciteBScore && (
+                            {!sbacScore && !iReadyScore && (
                               <p className="text-gray-600 italic">Enter at least one optional assessment above</p>
                             )}
                             {/* Show count of passed assessments */}
@@ -510,7 +457,7 @@ const RoadToReclassificationEnhanced = () => {
                         </h4>
                         <p className="text-sm text-blue-700">
                           {!elpacMeets && elpacResult ? (
-                            <>Focus on reaching ELPAC Level 4! You need {(selectedGrade === 7 ? 1576 : 1590) - elpacResult.overallScore} more points.</>
+                            <>Focus on reaching ELPAC Level 4! You need {(elpacTestGrade === 6 ? 1567 : elpacTestGrade === 7 ? 1576 : 1590) - elpacResult.overallScore} more points.</>
                           ) : !elpacMeets ? (
                             <>Take the ELPAC assessment and aim for Level 4!</>
                           ) : otherAssessmentsMet === 0 ? (
@@ -539,7 +486,7 @@ const RoadToReclassificationEnhanced = () => {
         </AnimatedCard>
 
         {/* Assessment Input Cards */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+        <div className="grid md:grid-cols-1 lg:grid-cols-1 gap-8 mb-8">
           {/* ELPAC Card */}
           <AnimatedCard delay={0.2} className="md:col-span-2 lg:col-span-4">
             <div className={`bg-white rounded-xl p-6 shadow-lg border-3 ${
@@ -564,11 +511,60 @@ const RoadToReclassificationEnhanced = () => {
               <div className="bg-indigo-50 p-4 rounded-lg mb-6 border border-indigo-200">
                 <p className="font-semibold text-indigo-800 text-lg">Required Level: Level 4 ONLY</p>
                 <p className="text-sm text-indigo-700 mt-1">
-                  Minimum Overall Score: {selectedGrade === 7 ? '1576' : '1590'}
+                  Minimum Overall Score: {elpacTestGrade === 6 ? '1567' : elpacTestGrade === 7 ? '1576' : '1590'}
                 </p>
                 <p className="text-xs text-indigo-600 mt-1">
                   Overall Score = (Oral Language × 50%) + (Written Language × 50%)
                 </p>
+              </div>
+
+              {/* ELPAC Test Grade Selector */}
+              <div className="mb-6 bg-yellow-50 border-2 border-yellow-300 rounded-lg p-4">
+                <label className="block text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
+                  <Info className="text-yellow-600" size={18} />
+                  What grade were you in when you took the ELPAC test?
+                </label>
+                <p className="text-xs text-gray-600 mb-3">
+                  Important: Select the grade you were in when you took the test, not your current grade. This affects how your score is evaluated.
+                </p>
+                <div className="flex gap-3">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setElpacTestGrade(6)}
+                    className={`flex-1 py-2 px-4 rounded-lg text-sm font-semibold transition-all ${
+                      elpacTestGrade === 6
+                        ? 'bg-indigo-500 text-white shadow-lg'
+                        : 'bg-white text-gray-600 hover:bg-gray-100 border-2 border-gray-300'
+                    }`}
+                  >
+                    6th Grade
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setElpacTestGrade(7)}
+                    className={`flex-1 py-2 px-4 rounded-lg text-sm font-semibold transition-all ${
+                      elpacTestGrade === 7
+                        ? 'bg-indigo-500 text-white shadow-lg'
+                        : 'bg-white text-gray-600 hover:bg-gray-100 border-2 border-gray-300'
+                    }`}
+                  >
+                    7th Grade
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setElpacTestGrade(8)}
+                    className={`flex-1 py-2 px-4 rounded-lg text-sm font-semibold transition-all ${
+                      elpacTestGrade === 8
+                        ? 'bg-indigo-500 text-white shadow-lg'
+                        : 'bg-white text-gray-600 hover:bg-gray-100 border-2 border-gray-300'
+                    }`}
+                  >
+                    8th Grade
+                  </motion.button>
+                </div>
               </div>
 
               <div className="grid md:grid-cols-2 gap-6 mb-6">
@@ -673,7 +669,7 @@ const RoadToReclassificationEnhanced = () => {
                   <div className="grid grid-cols-2 gap-4 mb-2 text-sm">
                     <div>
                       <p className="font-medium">Overall Score: <span className="font-bold">{elpacResult.overallScore}</span></p>
-                      <p className="text-xs opacity-75">Target: {selectedGrade === 7 ? '1576' : '1590'} for Level 4</p>
+                      <p className="text-xs opacity-75">Target: {elpacTestGrade === 6 ? '1567' : elpacTestGrade === 7 ? '1576' : '1590'} for Level 4</p>
                     </div>
                     <div>
                       <p>Oral: {elpacResult.oralScore} | Written: {elpacResult.writtenScore}</p>
@@ -683,7 +679,7 @@ const RoadToReclassificationEnhanced = () => {
                   <SuccessBadge show={elpacResult.meets} />
                   {!elpacResult.meets && (
                     <p className="font-semibold mt-2">
-                      📚 You need {(selectedGrade === 7 ? 1576 : 1590) - elpacResult.overallScore} more overall points to reach Level 4
+                      📚 You need {(elpacTestGrade === 6 ? 1567 : elpacTestGrade === 7 ? 1576 : 1590) - elpacResult.overallScore} more overall points to reach Level 4
                     </p>
                   )}
                 </motion.div>
@@ -691,13 +687,17 @@ const RoadToReclassificationEnhanced = () => {
             </div>
           </AnimatedCard>
 
-          <div className="md:col-span-2 lg:col-span-4">
+          {/* Optional Assessments Section Header */}
+          <div className="col-span-full">
             <h4 className="text-xl font-bold text-gray-700 text-center mb-4">Additional Requirement: Choose ONE Assessment</h4>
             <p className="text-gray-600 text-center mb-6">
-              After achieving ELPAC Level 4, you must ALSO meet the requirement for at least ONE of these assessments:
+              After achieving ELPAC Level 4, you must ALSO meet the requirement for at least ONE of these two assessments:
             </p>
           </div>
+        </div>
 
+        {/* Optional Assessment Cards Grid */}
+        <div className="grid md:grid-cols-2 gap-8 mb-8">
           {/* SBAC Card */}
           <AnimatedCard delay={0.3}>
             <div className={`bg-white rounded-xl p-6 shadow-lg border-3 h-full ${
@@ -871,164 +871,6 @@ const RoadToReclassificationEnhanced = () => {
                 >
                   <p className="font-semibold text-sm">Score: {iReadyScore} | Target: {iReadyTarget}</p>
                   <SuccessBadge show={iReadyMeets} />
-                </motion.div>
-              )}
-            </div>
-          </AnimatedCard>
-
-          {/* Edcite A Card */}
-          <AnimatedCard delay={0.5}>
-            <div className={`bg-white rounded-xl p-6 shadow-lg border-3 h-full ${
-              edciteAMeets ? 'border-green-400' : 'border-green-200'
-            }`}>
-              <div className="flex items-center gap-3 mb-4">
-                <div className={`p-2 rounded-full ${edciteAMeets ? 'bg-green-100' : 'bg-green-100'}`}>
-                  <FileText className={edciteAMeets ? 'text-green-600' : 'text-green-600'} size={24} />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold text-gray-800">Option 3: Edcite A</h3>
-                  <p className="text-sm text-gray-600">1st Semester Assessment</p>
-                </div>
-                {edciteAMeets && (
-                  <BounceIn>
-                    <CheckCircle className="text-green-600" size={28} />
-                  </BounceIn>
-                )}
-              </div>
-
-              <div className="bg-green-50 p-4 rounded-lg mb-4">
-                <p className="font-semibold text-green-800">Required Score:</p>
-                <p className="text-2xl font-bold text-green-600">{assessmentData.edciteA}</p>
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
-                  Your Edcite A Score
-                  <div className="group relative">
-                    <HelpCircle size={16} className="text-gray-400 cursor-help" />
-                    <div className="hidden group-hover:block absolute z-10 w-56 p-2 bg-gray-800 text-white text-xs rounded shadow-lg -top-2 left-6">
-                      This is your percentage score from the first semester Edcite assessment
-                    </div>
-                  </div>
-                </label>
-                <p className="text-xs text-gray-500 mb-2 flex items-center gap-1">
-                  <Info size={12} />
-                  Percentage score (0-100)
-                </p>
-                <input
-                  type="number"
-                  value={edciteAScore}
-                  onChange={(e) => setEdciteAScore(e.target.value)}
-                  className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-green-500 transition-colors ${
-                    edciteAScore && !isValidEdciteScore(edciteAScore)
-                      ? 'border-red-400 bg-red-50'
-                      : edciteAScore
-                      ? 'border-green-400 bg-green-50'
-                      : 'border-gray-300'
-                  }`}
-                  placeholder="e.g., 45"
-                />
-                {edciteAScore && !isValidEdciteScore(edciteAScore) && (
-                  <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="text-xs text-red-600 mt-1 flex items-center gap-1"
-                  >
-                    <AlertCircle size={12} />
-                    Score must be between 0 and 100
-                  </motion.p>
-                )}
-              </div>
-
-              {edciteAScore && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className={`p-4 rounded-lg ${
-                    edciteAMeets ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'
-                  }`}
-                >
-                  <p className="font-semibold text-sm">Score: {edciteAScore} | Target: {assessmentData.edciteA}</p>
-                  <SuccessBadge show={edciteAMeets} />
-                </motion.div>
-              )}
-            </div>
-          </AnimatedCard>
-
-          {/* Edcite B Card */}
-          <AnimatedCard delay={0.6}>
-            <div className={`bg-white rounded-xl p-6 shadow-lg border-3 h-full ${
-              edciteBMeets ? 'border-green-400' : 'border-orange-200'
-            }`}>
-              <div className="flex items-center gap-3 mb-4">
-                <div className={`p-2 rounded-full ${edciteBMeets ? 'bg-green-100' : 'bg-orange-100'}`}>
-                  <FileText className={edciteBMeets ? 'text-green-600' : 'text-orange-600'} size={24} />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold text-gray-800">Option 4: Edcite B</h3>
-                  <p className="text-sm text-gray-600">2nd Semester Assessment</p>
-                </div>
-                {edciteBMeets && (
-                  <BounceIn>
-                    <CheckCircle className="text-green-600" size={28} />
-                  </BounceIn>
-                )}
-              </div>
-
-              <div className="bg-orange-50 p-4 rounded-lg mb-4">
-                <p className="font-semibold text-orange-800">Required Score:</p>
-                <p className="text-2xl font-bold text-orange-600">{assessmentData.edciteB}</p>
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
-                  Your Edcite B Score
-                  <div className="group relative">
-                    <HelpCircle size={16} className="text-gray-400 cursor-help" />
-                    <div className="hidden group-hover:block absolute z-10 w-56 p-2 bg-gray-800 text-white text-xs rounded shadow-lg -top-2 left-6">
-                      This is your percentage score from the second semester Edcite assessment
-                    </div>
-                  </div>
-                </label>
-                <p className="text-xs text-gray-500 mb-2 flex items-center gap-1">
-                  <Info size={12} />
-                  Percentage score (0-100)
-                </p>
-                <input
-                  type="number"
-                  value={edciteBScore}
-                  onChange={(e) => setEdciteBScore(e.target.value)}
-                  className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-orange-500 transition-colors ${
-                    edciteBScore && !isValidEdciteScore(edciteBScore)
-                      ? 'border-red-400 bg-red-50'
-                      : edciteBScore
-                      ? 'border-green-400 bg-green-50'
-                      : 'border-gray-300'
-                  }`}
-                  placeholder="e.g., 42"
-                />
-                {edciteBScore && !isValidEdciteScore(edciteBScore) && (
-                  <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="text-xs text-red-600 mt-1 flex items-center gap-1"
-                  >
-                    <AlertCircle size={12} />
-                    Score must be between 0 and 100
-                  </motion.p>
-                )}
-              </div>
-
-              {edciteBScore && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className={`p-4 rounded-lg ${
-                    edciteBMeets ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'
-                  }`}
-                >
-                  <p className="font-semibold text-sm">Score: {edciteBScore} | Target: {assessmentData.edciteB}</p>
-                  <SuccessBadge show={edciteBMeets} />
                 </motion.div>
               )}
             </div>
